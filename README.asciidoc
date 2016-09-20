@@ -1,0 +1,112 @@
+= `env`
+
+Lua environment / sandbox  and `import` utilities.
+
+This module provides an environment building helper function. Environments built with this function are given an `import` function that can be used in a similar fashion to the standard `require`, adding results directly into the environment.
+
+An example. Keep in mind, the use of environments is slightly different in Lua <= 5.1 (`setfenv` and friends).
+
+[source, lua]
+----
+-- main.lua
+local _ENV = require 'env' { io = io, p = print }
+
+-- Locally, p is print:
+p 'Hello, world!'
+
+-- But no more upvalues!
+p(require) -- nil
+
+-- New import function:
+import 'io-ex' :use { 'printf' }
+-- `io-ex' loaded with the current environment,
+-- hence the need for `io' to be present
+printf('A number: %d\n', 51)
+----
+
+[source, lua]
+----
+-- io-ex.lua
+return {
+    printf = function (str, ...)
+        io.stdout:write(str:format(...))
+    end
+}
+----
+
+== Install
+
+Quick and easy with https://luarocks.org/modules/oka/env[`luarocks`].
+
+[source, shell]
+----
+$ luarocks install env
+----
+
+Or manually grab the https://github.com/Okahyphen/env[source].
+
+== Documentation
+
+=== The module
+
+`env` as a module fairly simple - most of the complexity arises from understanding _how_ environments in Lua work, and _when_ it is appropriate to use them. Make sure you read up on them in the  http://www.lua.org/manual/5.3/manual.html#2.2[Lua Reference Manual].
+
+That said, the environments created by this module are very generic - they are just tables. Nothing fancy.
+
+[source, lua]
+----
+_G.env = require 'env'
+----
+
+The return value of requiring the `env` module is a _function_, that takes an optional table. This table acts as the base for the new environment, which is the return value of the function. Omitting the table will result in the new environment being a clone of the current `_G`, or an empty table if `_G` is not present.
+
+[source, lua]
+----
+local my_env = env()
+----
+
+`my_env` is given a new member, `import`, which is a table supporting the functionality to load modules directly into the host environment.
+
+=== `import`
+
+`import` is a do-all table.
+
+`import.cache` is a module cache. Modules are cached by their imported name (see below). The module path and result are stored.
+
+`import.paths` is a dense table, containing a list of paths to search for the module-to-import. The default set of search paths is generated from the combined `package.path` string when `env` is first required.
+
+_Invoking_ `import` calls a function which takes a single argument, a string representing the module name to search for, and load if present.
+
+[source, lua]
+----
+my_env.import 'foo'
+----
+
+If found, the module is loaded with its environment set to the host environment of `import` (e.g., `my_env`). If the module namespace in the environment is `nil`, the namespace is set as the return value of the module. To override the namespace, end the module name with a bang.
+
+[source, lua]
+----
+my_env.foo = true
+my_env.import 'foo!' -- Overrides the existing member
+----
+
+The return value of the invocation of `import` is a transient table that can be used to further alter the state of the environment. It offers two functions `:as` and `:use` - each returning the transient table, for chaining.
+
+`:as` is used to import the module with a different name. It _will_ override any existing namespace. Using this function will remove the original imported namespace from the environment if it was set by `import`.
+
+[source, lua]
+----
+my_env.import 'foo' :as 'bar'
+----
+
+`:use` is used to import members of the module, optionally with different names. In a similar fashion to `:as`, this function will remove the original imported namespace, unless it was forced.
+
+[source, lua]
+----
+my_env.import 'foo' :use { my_func = 'func', 'BAZ' }
+my_env.my_func(my_env.BAZ)
+----
+
+== License
+
+https://raw.githubusercontent.com/Okahyphen/env/master/LICENSE[MIT], just like Lua.
