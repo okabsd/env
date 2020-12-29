@@ -1,18 +1,18 @@
 package = 'env'
-version = '0.1-0'
+version = '1.0-0'
 description = {
 	summary = 'Environment & sandbox import utility',
 	detailed = [[
 		A small environment wrapper that provides an import utility,
 		with improved syntax over the standard `require'.
 	]],
-	homepage = 'http://env.oka.io',
+	homepage = 'https://github.com/okabsd/env',
 	maintainer = 'yo@oka.io',
 	license = 'MIT'
 }
 source = {
-	url = 'git://github.com/Okahyphen/env',
-	tag = 'v0.1.0'
+	url = 'git://github.com/okabsd/env',
+	tag = 'v1.0.0'
 }
 dependencies = {
 	'lua >= 5.1'
