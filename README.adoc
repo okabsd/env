@@ -43,13 +43,13 @@ Quick and easy with https://luarocks.org/modules/oka/env[`luarocks`].
 $ luarocks install env
 ----
 
-Or manually grab the https://github.com/Okahyphen/env[source].
+Or manually grab the https://github.com/okabsd/env[source].
 
 == Documentation
 
 === The module
 
-`env` as a module fairly simple - most of the complexity arises from understanding _how_ environments in Lua work, and _when_ it is appropriate to use them. Make sure you read up on them in the  http://www.lua.org/manual/5.3/manual.html#2.2[Lua Reference Manual].
+`env` as a module fairly simple - most of the complexity arises from understanding _how_ environments in Lua work, and _when_ it is appropriate to use them. Make sure you read up on them in the https://www.lua.org/manual/5.4/manual.html#2.2[Lua Reference Manual].
 
 That said, the environments created by this module are very generic - they are just tables. Nothing fancy.
 
@@ -109,4 +109,4 @@ my_env.my_func(my_env.BAZ)
 
 == License
 
-https://raw.githubusercontent.com/Okahyphen/env/master/LICENSE[MIT], just like Lua.
+https://raw.githubusercontent.com/okabsd/env/master/LICENSE[MIT], just like Lua.
